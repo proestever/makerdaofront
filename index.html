@@ -6,238 +6,161 @@
   <title>MakerDAO PulseChain Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f4f4f4;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      background-color: #111111;
+      color: #e0e0e0;
     }
     .container {
       max-width: 1200px;
-      margin: 0 auto;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .ticker-logo {
-      width: 40px;
-      vertical-align: middle;
-      margin: 0 10px;
+      margin: 40px auto;
+      padding: 20px;
+      animation: fadeIn 1s ease-in-out;
     }
     h1 {
-      font-size: 2.4em;
-      display: inline;
-      vertical-align: middle;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.8em;
+      color: #ffffff;
     }
     .card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
+      background-color: #1a1a1a;
+      border: 1px solid #333333;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      background-color: #222222;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.7);
+    }
+    .ticker-logo {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      margin-right: 5px;
     }
     .section-header {
-      font-size: 1.5em;
-      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      border-bottom: 1px solid #444444;
+      padding-bottom: 10px;
+      color: #ffffff;
+    }
+    .supply-list, .auction-list, .stats-list {
+      list-style: none;
+      padding: 0;
+    }
+    .supply-entry, .auction-entry, .stats-entry {
+      background-color: #1a1a1a;
+      border: 1px solid #333333;
+      border-radius: 8px;
+      padding: 15px;
       margin-bottom: 10px;
+      transition: background-color 0.3s ease;
+    }
+    .supply-entry:hover, .auction-entry:hover, .stats-entry:hover {
+      background-color: #222222;
+    }
+    .timestamp {
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .supply, .auction-detail, .stat-detail {
+      margin: 5px 0;
+      font-size: 1.2em;
+    }
+    .change-positive {
+      color: #00ff00;
+      font-weight: bold;
+    }
+    .change-negative {
+      color: #ff4444;
+      font-weight: bold;
+    }
+    .wei {
+      font-size: 0.9em;
+      color: #a0a0a0;
     }
     .status {
-      font-style: italic;
-      color: #666;
-    }
-    .error {
-      color: red;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+      text-align: center;
       margin-top: 10px;
+      font-style: italic;
+      color: #a0a0a0;
     }
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
+    .spinner {
+      display: inline-block;
+      animation: spin 1s linear infinite;
     }
-    th {
-      background-color: #f9f9f9;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @media (max-width: 768px) {
+      h1 { font-size: 2.4em; }
+      .section-header { font-size: 1.6em; }
+      .card, .supply-entry, .auction-entry, .stats-entry { padding: 10px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <img src="https://tokens.app.pulsex.com/images/tokens/0x6B175474E89094C44Da98b954EedeAC495271d0F.png" alt="pDAI Logo" class="ticker-logo" />
-      <h1>MakerDAO PulseChain Dashboard</h1>
-      <img src="https://dd.dexscreener.com/ds-data/tokens/pulsechain/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2.png?size=xl&key=e55add" alt="pMKR Logo" class="ticker-logo" />
-    </header>
+    <h1>MakerDAO PulseChain Dashboard</h1>
 
-    <section id="pdai-supply" class="card">
-      <div class="section-header">pDAI Supply History</div>
-      <div id="pdai-supply-content" class="status">⏳ Checking pDAI supply...</div>
-    </section>
+    <!-- pDAI Supply Section -->
+    <div class="card">
+      <div class="section-header">
+        <img src="https://tokens.app.pulsex.com/images/tokens/0x6B175474E89094C44Da98b954EedeAC495271d0F.png" alt="pDAI Logo" class="ticker-logo" />
+        pDAI Supply History
+      </div>
+      <ul id="pDaiSupplyList" class="supply-list"></ul>
+      <div id="pDaiStatus" class="status"><span class="spinner">⏳</span> Checking pDAI supply...</div>
+    </div>
 
-    <section id="pmkr-supply" class="card">
-      <div class="section-header">pMKR Supply History</div>
-      <div id="pmkr-supply-content" class="status">⏳ Checking pMKR supply...</div>
-    </section>
+    <!-- pMKR Supply Section -->
+    <div class="card">
+      <div class="section-header">
+        <img src="https://dd.dexscreener.com/ds-data/tokens/pulsechain/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2.png?size=xl&key=e55add" alt="pMKR Logo" class="ticker-logo" />
+        pMKR Supply History
+      </div>
+      <ul id="pMkrSupplyList" class="supply-list"></ul>
+      <div id="pMkrStatus" class="status"><span class="spinner">⏳</span> Checking pMKR supply...</div>
+    </div>
 
-    <section id="current-auctions" class="card">
+    <!-- Current Auctions (All Ilks) -->
+    <div class="card">
       <div class="section-header">Current Auctions (All Ilks)</div>
-      <div id="current-auctions-content" class="status">⏳ Loading auctions...</div>
-    </section>
+      <ul id="currentAuctionsList" class="auction-list"></ul>
+      <div id="auctionsStatus" class="status"><span class="spinner">⏳</span> Loading auctions...</div>
+    </div>
 
-    <section id="flop-auctions" class="card">
+    <!-- Flop Auctions -->
+    <div class="card">
       <div class="section-header">Flop Auctions (Debt Auctions)</div>
-      <div id="flop-auctions-content" class="status">⏳ Loading Flop auctions...</div>
-    </section>
+      <ul id="flopAuctionsList" class="auction-list"></ul>
+      <div id="flopStatus" class="status"><span class="spinner">⏳</span> Loading Flop auctions...</div>
+    </div>
 
-    <section id="protocol-stats" class="card">
+    <!-- Maker Protocol Stats -->
+    <div class="card">
       <div class="section-header">Maker Protocol Stats</div>
-      <div id="protocol-stats-content" class="status">⏳ Loading stats...</div>
-    </section>
+      <ul id="makerStatsList" class="stats-list"></ul>
+      <div id="statsStatus" class="status"><span class="spinner">⏳</span> Loading stats...</div>
+    </div>
   </div>
 
-  <script src="https://cdn.ethers.io/lib/ethers-6.13.5.umd.min.js"></script>
-  <script>
-    // Connect to PulseChain RPC
-    const provider = new ethers.JsonRpcProvider('https://rpc.pulsechain.com');
-
-    // Contract addresses (assumed same as Ethereum for PulseChain; verify if needed)
-    const PDAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F'; // pDAI
-    const PMKR_ADDRESS = '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'; // pMKR
-    const MCD_VAT_ADDRESS = '0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b'; // Vat
-    const MCD_FLOP_ADDRESS = '0xa41b6ef151e06da0e34b009b86e828308986736d'; // Flop
-    const CLIPPER_ADDRESS = '0xc67963a226eddd77b91ad8c421630a1b0adff270'; // Example Clipper for ETH-A
-
-    // Minimal ABIs (expand as needed)
-    const ERC20_ABI = [
-      {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
-    ];
-    const VAT_ABI = [
-      {"constant":true,"inputs":[],"name":"debt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
-    ];
-    const FLOP_ABI = [
-      {"constant":true,"inputs":[],"name":"kicks","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
-      {"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"bids","outputs":[{"name":"bid","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"guy","type":"address"},{"name":"tic","type":"uint48"},{"name":"end","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"}
-    ];
-    const CLIPPER_ABI = [
-      {"constant":true,"inputs":[],"name":"list","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},
-      {"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"sales","outputs":[{"name":"pos","type":"uint256"},{"name":"tab","type":"uint256"},{"name":"lot","type":"uint256"},{"name":"usr","type":"address"},{"name":"tic","type":"uint96"},{"name":"top","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
-    ];
-
-    // Contract instances
-    const pdaiContract = new ethers.Contract(PDAI_ADDRESS, ERC20_ABI, provider);
-    const pmkrContract = new ethers.Contract(PMKR_ADDRESS, ERC20_ABI, provider);
-    const vatContract = new ethers.Contract(MCD_VAT_ADDRESS, VAT_ABI, provider);
-    const flopContract = new ethers.Contract(MCD_FLOP_ADDRESS, FLOP_ABI, provider);
-    const clipperContract = new ethers.Contract(CLIPPER_ADDRESS, CLIPPER_ABI, provider);
-
-    // Utility functions
-    function formatWad(value) {
-      return ethers.formatUnits(value, 18);
-    }
-    function formatNumber(num) {
-      return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    // Fetch pDAI Supply
-    async function fetchPDAISupply() {
-      try {
-        const supply = await pdaiContract.totalSupply();
-        const formattedSupply = formatNumber(formatWad(supply));
-        document.getElementById('pdai-supply-content').innerHTML = `<p>Total pDAI Supply: ${formattedSupply} pDAI</p>`;
-      } catch (error) {
-        document.getElementById('pdai-supply-content').innerHTML = `<p class="error">Error: ${error.message}</p>`;
-      }
-    }
-
-    // Fetch pMKR Supply
-    async function fetchPMKRSupply() {
-      try {
-        const supply = await pmkrContract.totalSupply();
-        const formattedSupply = formatNumber(formatWad(supply));
-        document.getElementById('pmkr-supply-content').innerHTML = `<p>Total pMKR Supply: ${formattedSupply} pMKR</p>`;
-      } catch (error) {
-        document.getElementById('pmkr-supply-content').innerHTML = `<p class="error">Error: ${error.message}</p>`;
-      }
-    }
-
-    // Fetch Current Auctions (Liquidation Auctions via Clipper)
-    async function fetchCurrentAuctions() {
-      try {
-        const auctionIds = await clipperContract.list();
-        if (auctionIds.length === 0) {
-          document.getElementById('current-auctions-content').innerHTML = '<p>No active auctions.</p>';
-          return;
-        }
-        let table = '<table><thead><tr><th>ID</th><th>Collateral</th><th>Bid (pDAI)</th><th>Status</th></tr></thead><tbody>';
-        for (const id of auctionIds) {
-          const sale = await clipperContract.sales(id);
-          const collateral = formatWad(sale.lot);
-          const bid = formatWad(sale.tab);
-          const status = sale.tic > 0 ? 'Active' : 'Ended';
-          table += `<tr><td>${id}</td><td>${formatNumber(collateral)}</td><td>${formatNumber(bid)}</td><td>${status}</td></tr>`;
-        }
-        table += '</tbody></table>';
-        document.getElementById('current-auctions-content').innerHTML = table;
-      } catch (error) {
-        document.getElementById('current-auctions-content').innerHTML = `<p class="error">Error: ${error.message}</p>`;
-      }
-    }
-
-    // Fetch Flop Auctions (Debt Auctions)
-    async function fetchFlopAuctions() {
-      try {
-        const kicks = await flopContract.kicks();
-        if (kicks == 0) {
-          document.getElementById('flop-auctions-content').innerHTML = '<p>No active Flop auctions.</p>';
-          return;
-        }
-        let table = '<table><thead><tr><th>ID</th><th>pMKR Amount</th><th>Bid (pDAI)</th><th>Status</th></tr></thead><tbody>';
-        for (let i = Math.max(0, kicks - 5); i < kicks; i++) {
-          const bid = await flopContract.bids(i);
-          if (bid.end > 0) {
-            const mkrAmount = formatWad(bid.lot);
-            const daiBid = formatWad(bid.bid);
-            const status = bid.tic > 0 ? 'Active' : 'Ended';
-            table += `<tr><td>${i}</td><td>${formatNumber(mkrAmount)}</td><td>${formatNumber(daiBid)}</td><td>${status}</td></tr>`;
-          }
-        }
-        table += '</tbody></table>';
-        document.getElementById('flop-auctions-content').innerHTML = table;
-      } catch (error) {
-        document.getElementById('flop-auctions-content').innerHTML = `<p class="error">Error: ${error.message}</p>`;
-      }
-    }
-
-    // Fetch Protocol Stats (Total System Debt)
-    async function fetchProtocolStats() {
-      try {
-        const debt = await vatContract.debt();
-        const formattedDebt = formatNumber(formatWad(debt));
-        document.getElementById('protocol-stats-content').innerHTML = `<p>Total System Debt: ${formattedDebt} pDAI</p>`;
-      } catch (error) {
-        document.getElementById('protocol-stats-content').innerHTML = `<p class="error">Error: ${error.message}</p>`;
-      }
-    }
-
-    // Fetch all data
-    async function fetchAllData() {
-      await Promise.all([
-        fetchPDAISupply(),
-        fetchPMKRSupply(),
-        fetchCurrentAuctions(),
-        fetchFlopAuctions(),
-        fetchProtocolStats()
-      ]);
-    }
-
-    // Initial fetch
-    fetchAllData();
-
-    // Refresh every 5 minutes
-    setInterval(fetchAllData, 300000);
-  </script>
+  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+  <script src="dashboard.js" defer></script>
 </body>
 </html>
