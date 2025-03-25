@@ -313,51 +313,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Maker Stats
     async function fetchMakerStats() {
-      if (!vow) {
-        showError('statsStatus', 'Vow contract not available');
-        return;
+  const VOW_ADDRESS = '0xA950524441892A31ebddF91d3cEEFa04Bf454466';
+  const vow = new ethers.Contract(VOW_ADDRESS, [
+    // Your provided Vow ABI here
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "Awe",
+      "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    // ... other ABI entries ...
+  ], provider);
+
+  async function checkStats() {
+    try {
+      const statsList = document.getElementById('makerStatsList');
+      const status = document.getElementById('statsStatus');
+      status.innerHTML = `<span class="spinner">⏳</span> Loading stats...`;
+      statsList.innerHTML = '';
+
+      // Check if Vow contract is deployed
+      const code = await provider.getCode(VOW_ADDRESS);
+      console.log(`Vow contract code at ${VOW_ADDRESS}:`, code);
+      if (code === '0x') {
+        throw new Error(`Vow contract not deployed at ${VOW_ADDRESS} on PulseChain`);
       }
-      async function checkStats() {
-        try {
-          const statsList = document.getElementById('makerStatsList');
-          const status = document.getElementById('statsStatus');
-          status.innerHTML = `<span class="spinner">⏳</span> Loading stats...`;
-          statsList.innerHTML = '';
 
-          const awe = await vow.Awe();
-          const sin = await vow.Sin();
-          const ash = await vow.Ash();
-          const woe = await vow.Woe();
-          const joy = await vow.Joy();
-          const sump = await vow.sump();
-          const wait = await vow.wait();
+      const awe = await vow.Awe();
+      const sin = await vow.Sin();
+      const ash = await vow.Ash();
+      const woe = await vow.Woe();
+      const joy = await vow.Joy();
+      const sump = await vow.sump();
+      const wait = await vow.wait();
 
-          const stats = [
-            { label: "Awe (Total Debt)", value: ethers.utils.formatUnits(awe, 18), unit: "pDAI" },
-            { label: "Sin (Queued Debt)", value: ethers.utils.formatUnits(sin, 18), unit: "pDAI" },
-            { label: "Ash (Auctioned Debt)", value: ethers.utils.formatUnits(ash, 18), unit: "pDAI" },
-            { label: "Woe (Bad Debt Ready)", value: ethers.utils.formatUnits(woe, 18), unit: "pDAI" },
-            { label: "Joy (Available pDAI)", value: ethers.utils.formatUnits(joy, 18), unit: "pDAI" },
-            { label: "Sump (Min Debt Auction)", value: ethers.utils.formatUnits(sump, 18), unit: "pDAI" },
-            { label: "Wait Period", value: wait.toString(), unit: "seconds" }
-          ];
+      const stats = [
+        { label: "Awe (Total Debt)", value: ethers.utils.formatUnits(awe, 18), unit: "pDAI" },
+        { label: "Sin (Queued Debt)", value: ethers.utils.formatUnits(sin, 18), unit: "pDAI" },
+        { label: "Ash (Auctioned Debt)", value: ethers.utils.formatUnits(ash, 18), unit: "pDAI" },
+        { label: "Woe (Bad Debt Ready)", value: ethers.utils.formatUnits(woe, 18), unit: "pDAI" },
+        { label: "Joy (Available pDAI)", value: ethers.utils.formatUnits(joy, 18), unit: "pDAI" },
+        { label: "Sump (Min Debt Auction)", value: ethers.utils.formatUnits(sump, 18), unit: "pDAI" },
+        { label: "Wait Period", value: wait.toString(), unit: "seconds" }
+      ];
 
-          stats.forEach(stat => {
-            const li = document.createElement('li');
-            li.className = 'stats-entry';
-            li.innerHTML = `<div class="stat-detail">${stat.label}: ${formatNumber(Number(stat.value))} ${stat.unit}</div>`;
-            statsList.appendChild(li);
-          });
+      stats.forEach(stat => {
+        const li = document.createElement('li');
+        li.className = 'stats-entry';
+        li.innerHTML = `<div class="stat-detail">${stat.label}: ${formatNumber(Number(stat.value))} ${stat.unit}</div>`;
+        statsList.appendChild(li);
+      });
 
-          status.textContent = 'Stats loaded.';
-          setTimeout(checkStats, 30000);
-        } catch (error) {
-          showError('statsStatus', error.message);
-          setTimeout(checkStats, 5000);
-        }
-      }
-      checkStats();
+      status.textContent = 'Stats loaded.';
+      setTimeout(checkStats, 30000);
+    } catch (error) {
+      showError('statsStatus', error.message);
+      setTimeout(checkStats, 5000);
     }
+  }
+  checkStats();
+}
+
+// Ensure these helper functions are defined elsewhere in your code
+function formatNumber(num) {
+  return num.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+}
+
+function showError(statusId, message) {
+  document.getElementById(statusId).textContent = `Error: ${message} (retrying...)`;
+}
 
     // Helper Functions
     function formatNumber(num) {
