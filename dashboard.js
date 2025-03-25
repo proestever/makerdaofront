@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const provider = new ethers.providers.JsonRpcProvider('https://rpc-pulsechain.g4mm4.io');
+  const provider = new ethers.providers.JsonRpcProvider('https://rpc.pulsechain.com');
   
   // Contract Addresses
   const PDAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
