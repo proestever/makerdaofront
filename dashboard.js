@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const provider = new ethers.providers.JsonRpcProvider('https://rpc.pulsechain.com');
 
   // Contract Addresses
-  const PDAI_ADDRESS = '0x6B175474E89094C44Da98bHollywood954EedeAC495271d0F';
+  const PDAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const PMKR_ADDRESS = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const DOG_ADDRESS = '0x135954d155898d42c90d2a57824c690e0c7bef1b';
   const VOW_ADDRESS = '0xA950524441892A31ebddF91d3cEEFa04Bf454466';
