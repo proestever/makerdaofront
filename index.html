@@ -58,10 +58,6 @@
       padding-bottom: 10px;
       color: #ffffff;
     }
-    .supply-list, .auction-list, .stats-list {
-      list-style: none;
-      padding: 0;
-    }
     .supply-entry, .auction-entry, .stats-entry {
       background-color: #1a1a1a;
       border: 1px solid #333333;
@@ -122,20 +118,20 @@
     <div class="card">
       <div class="section-header">
         <img src="https://tokens.app.pulsex.com/images/tokens/0x6B175474E89094C44Da98b954EedeAC495271d0F.png" alt="pDAI Logo" class="ticker-logo" />
-        pDAI Supply History
+        pDAI Supply
       </div>
-      <ul id="pDaiSupplyList" class="supply-list"></ul>
-      <div id="pDaiStatus" class="status"><span class="spinner">⏳</span> Checking pDAI supply...</div>
+      <div id="pDaiSupply" class="supply-entry"></div>
+      <div id="pDaiStatus" class="status">Initializing...</div>
     </div>
 
     <!-- pMKR Supply Section -->
     <div class="card">
       <div class="section-header">
-        <img src="https://dd.dexscreener.com/ds-data/tokens/pulsechain/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2.png?size=xl&key=e55add" alt="pMKR Logo" class="ticker-logo" />
-        pMKR Supply History
+        <img src="https://dd.dexscreener.com/ds-data/tokens/pulsechain/0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2.png?size=xl&key=e55add" alt="pMKR Logo" class="ticker-logo" />
+        pMKR Supply
       </div>
-      <ul id="pMkrSupplyList" class="supply-list"></ul>
-      <div id="pMkrStatus" class="status"><span class="spinner">⏳</span> Checking pMKR supply...</div>
+      <div id="pMkrSupply" class="supply-entry"></div>
+      <div id="pMkrStatus" class="status">Initializing...</div>
     </div>
 
     <!-- Current Auctions (All Ilks) -->
